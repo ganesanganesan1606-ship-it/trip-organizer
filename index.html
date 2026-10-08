@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trip Organizer</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:Arial,sans-serif;
+}
+
+body{
+  background:#f4f6f8;
+  color:#222;
+}
+
+header{
+  background:#111827;
+  color:white;
+  padding:20px;
+  text-align:center;
+}
+
+header h1{
+  font-size:28px;
+}
+
+header p{
+  margin-top:6px;
+  opacity:.8;
+}
+
+.container{
+  max-width:900px;
+  margin:auto;
+  padding:20px;
+}
+
+.card{
+  background:white;
+  border-radius:15px;
+  padding:20px;
+  margin-bottom:20px;
+  box-shadow:0 3px 12px rgba(0,0,0,.08);
+}
+
+h2{
+  margin-bottom:15px;
+}
+
+input,button,select{
+  width:100%;
+  padding:12px;
+  margin-top:8px;
+  margin-bottom:12px;
+  border-radius:8px;
+  border:1px solid #ccc;
+  font-size:16px;
+}
+
+button{
+  background:#2563eb;
+  color:white;
+  border:none;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+button:hover{
+  opacity:.9;
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+}
+
+.stat{
+  background:#eef2ff;
+  padding:18px;
+  border-radius:12px;
+  text-align:center;
+}
+
+.stat h3{
+  font-size:14px;
+  margin-bottom:8px;
+}
+
+.stat p{
+  font-size:22px;
+  font-weight:bold;
+}
+
+.member{
+  padding:12px;
+  background:#f3f4f6;
+  border-radius:8px;
+  margin-bottom:8px;
+}
+
+.route{
+  border-left:4px solid #2563eb;
+  padding-left:15px;
+}
+
+.route div{
+  margin:15px 0;
+}
+
+.map{
+  height:280px;
+  background:#dbeafe;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  font-size:20px;
+  color:#1e40af;
+}
+
+.location{
+  background:#ecfdf5;
+  padding:15px;
+  border-radius:10px;
+  margin-top:10px;
+  word-break:break-word;
+}
+
+@media(max-width:600px){
+  .stats{
+    grid-template-columns:1fr;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>🌍 Trip Organizer</h1>
+  <p>Plan • Track • Manage Your Trip</p>
+</header>
+
+<div class="container">
+
+<!-- TRIP DETAILS -->
+<div class="card">
+  <h2>🧳 Trip Details</h2>
+
+  <input id="tripName"
+         type="text"
+         placeholder="Trip name">
+
+  <input id="destination"
+         type="text"
+         placeholder="Destination">
+
+  <input id="tripDate"
+         type="date">
+
+  <button onclick="saveTrip()">Save Trip</button>
+
+  <p id="tripInfo"></p>
+</div>
+
+
+<!-- MONEY -->
+<div class="card">
+  <h2>💰 Money Tracker</h2>
+
+  <div class="stats">
+
+    <div class="stat">
+      <h3>Collected</h3>
+      <p>₹<span id="collected">0</span></p>
+    </div>
+
+    <div class="stat">
+      <h3>Expenses</h3>
+      <p>₹<span id="expenses">0</span></p>
+    </div>
+
+    <div class="stat">
+      <h3>Balance</h3>
+      <p>₹<span id="balance">0</span></p>
+    </div>
+
+  </div>
+
+  <input id="amount"
+         type="number"
+         placeholder="Enter amount">
+
+  <button onclick="addCollection()">Add Collection</button>
+
+  <button onclick="addExpense()">Add Expense</button>
+</div>
+
+
+<!-- MEMBERS -->
+<div class="card">
+  <h2>👥 Trip Members</h2>
+
+  <input id="memberName"
+         type="text"
+         placeholder="Member name">
+
+  <button onclick="addMember()">Add Member</button>
+
+  <div id="members"></div>
+</div>
+
+
+<!-- ROUTE -->
+<div class="card">
+  <h2>📍 Trip Route</h2>
+
+  <div class="route">
+
+    <div>🏁 Chennai</div>
+
+    <div>⬇️</div>
+
+    <div>📍 Pondicherry</div>
+
+    <div>⬇️</div>
+
+    <div>📍 Thanjavur</div>
+
+    <div>⬇️</div>
+
+    <div>🏔️ Kodaikanal</div>
+
+  </div>
+
+  <h3 style="margin-top:15px;">
+    Total Distance: <span id="distance">248</span> KM
+  </h3>
+</div>
+
+
+<!-- MAP -->
+<div class="card">
+  <h2>🗺️ Map</h2>
+
+  <div class="map">
+    📍 Trip Map<br>
+    <small>Google Maps can be connected later</small>
+  </div>
+</div>
+
+
+<!-- LIVE LOCATION -->
+<div class="card">
+
+  <h2>📡 Live Location</h2>
+
+  <p>
+    Allow location access to find your current position.
+  </p>
+
+  <button onclick="getLocation()">
+    📍 Get My Current Location
+  </button>
+
+  <div class="location" id="location">
+    Location not detected yet.
+  </div>
+
+</div>
+
+
+<!-- EXPENSE LIST -->
+<div class="card">
+
+  <h2>🧾 Expenses</h2>
+
+  <div id="expenseList">
+    No expenses added.
+  </div>
+
+</div>
+
+</div>
+
+
+<script>
+
+let collected = 0;
+let expenses = 0;
+let members = [];
+let expenseItems = [];
+
+
+function saveTrip(){
+
+  let name = document.getElementById("tripName").value;
+  let destination = document.getElementById("destination").value;
+  let date = document.getElementById("tripDate").value;
+
+  if(!name){
+    alert("Please enter trip name");
+    return;
+  }
+
+  document.getElementById("tripInfo").innerHTML =
+    "<b>Trip:</b> " + name +
+    "<br><b>Destination:</b> " + destination +
+    "<br><b>Date:</b> " + date;
+}
+
+
+function addCollection(){
+
+  let amount = Number(document.getElementById("amount").value);
+
+  if(amount <= 0){
+    alert("Enter a valid amount");
+    return;
+  }
+
+  collected += amount;
+
+  updateMoney();
+
+  document.getElementById("amount").value = "";
+}
+
+
+function addExpense(){
+
+  let amount = Number(document.getElementById("amount").value);
+
+  if(amount <= 0){
+    alert("Enter a valid amount");
+    return;
+  }
+
+  expenses += amount;
+
+  expenseItems.push(amount);
+
+  updateMoney();
+  updateExpenses();
+
+  document.getElementById("amount").value = "";
+}
+
+
+function updateMoney(){
+
+  document.getElementById("collected").innerText =
+    collected;
+
+  document.getElementById("expenses").innerText =
+    expenses;
+
+  document.getElementById("balance").innerText =
+    collected - expenses;
+}
+
+
+function updateExpenses(){
+
+  let list = document.getElementById("expenseList");
+
+  if(expenseItems.length === 0){
+    list.innerHTML = "No expenses added.";
+    return;
+  }
+
+  list.innerHTML = "";
+
+  expenseItems.forEach(function(amount,index){
+
+    let item = document.createElement("div");
+
+    item.className = "member";
+
+    item.innerHTML =
+      "Expense " + (index + 1) +
+      " : ₹" + amount;
+
+    list.appendChild(item);
+
+  });
+}
+
+
+function addMember(){
+
+  let name =
+    document.getElementById("memberName").value.trim();
+
+  if(!name){
+    alert("Enter member name");
+    return;
+  }
+
+  members.push(name);
+
+  displayMembers();
+
+  document.getElementById("memberName").value = "";
+}
+
+
+function displayMembers(){
+
+  let box =
+    document.getElementById("members");
+
+  box.innerHTML = "";
+
+  members.forEach(function(name,index){
+
+    let member =
+      document.createElement("div");
+
+    member.className = "member";
+
+    member.innerHTML =
+      "👤 " + (index + 1) + ". " + name;
+
+    box.appendChild(member);
+
+  });
+}
+
+
+function getLocation(){
+
+  if(!navigator.geolocation){
+
+    document.getElementById("location").innerText =
+      "Location is not supported by this browser.";
+
+    return;
+  }
+
+  document.getElementById("location").innerText =
+    "Getting your location...";
+
+  navigator.geolocation.getCurrentPosition(
+
+    function(position){
+
+      let lat =
+        position.coords.latitude;
+
+      let lon =
+        position.coords.longitude;
+
+      document.getElementById("location").innerHTML =
+        "<b>Latitude:</b> " + lat +
+        "<br><b>Longitude:</b> " + lon +
+        "<br><br>📍 Location detected successfully.";
+
+    },
+
+    function(error){
+
+      document.getElementById("location").innerText =
+        "Unable to get location. Please allow location permission.";
+
+    }
+
+  );
+
+}
+
+</script>
+
+</body>
+    </html>
